@@ -1,9 +1,6 @@
 import csv
-from model.movie import Movie
-
-DS_FILE_MOVIE = "movies.csv"
-DS_FILE_TAGS = "tags.csv"
-DS_FILE_LINKS = "links.csv"
+from model.movie import MovieItem
+from common.constants import *
 
 class DatasetParser(object):
     def __init__(self):
@@ -31,17 +28,14 @@ class DatasetParser(object):
         for row in fcsv:
             movie_id = row[0]
             if movie_id in movies:
-                movies[movie_id].imdb_id = row[1]
-                movies[movie_id].tmdb_id = row[2]
-                print(movie_id)
-                print(movies[movie_id])
+                movies[movie_id].imdb_id = int(row[1]) if row[1] else None
+                movies[movie_id].tmdb_id = int(row[2]) if row[2] else None
     
     def __parse_movies(self, file=DS_FILE_MOVIE):
         movies = {}
         fcsv = self.__get_csv(file)
         headers = next(fcsv)
-        headers = next(fcsv)
         for row in fcsv:
             movie_id = row[0]
-            movies[movie_id] = Movie(id=movie_id, title=row[1], genres=row[2])
+            movies[movie_id] = MovieItem(id=movie_id, title=row[1], genres=row[2])
         return movies
