@@ -1,8 +1,9 @@
 import re 
+from common.constants import *
 
 class MovieItem(object):
     def __init__(self, id=None, imdb_id=None, tmdb_id=None, title=None, 
-                year='', poster='', summary='', time='', rating=None, genres=None):
+                year='', poster='', summary='', time='', rating=None, genres=None, status=STAT_NOT_READY):
         self.id = int(id) if id else None
         self.imdb_id = int(imdb_id) if imdb_id else None
         self.tmdb_id = int(tmdb_id) if tmdb_id else None
@@ -13,6 +14,7 @@ class MovieItem(object):
         self.rating = float(rating) if rating else None
         self.genres = genres
         self.year = None
+        self.status = STAT_NOT_READY if status is None else status
         self.init()
 
     @staticmethod
@@ -21,12 +23,14 @@ class MovieItem(object):
                         tmdb_id=row['tmdb_id'], title=row['title'], 
                         year=row['year'], poster=row['poster'],
                         summary=row['summary'], time=row['time'], 
-                        rating=row['rating']) if row else None
+                        rating=row['rating'], status=row['status']) if row else None
 
     def get_tuple_values(self):
-        return (self.id, self.imdb_id, self.tmdb_id, self.title, self.year, self.poster, self.summary, self.time, self.rating)
+        return (self.id, self.imdb_id, self.tmdb_id, self.title, self.year, self.poster, self.summary, self.time, self.rating, self.status)
 
     def init(self):
+        if self.title is None:
+            return
         match = re.match(r'.* \((\d+)\)', self.title)
         if match:
             self.year = int(match.group(1).strip())

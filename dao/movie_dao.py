@@ -1,4 +1,5 @@
 from model.movie import MovieItem
+from common.constants import *
 
 class MovieItemDAO(object):
     def __init__(self, conn):
@@ -17,15 +18,18 @@ class MovieItemDAO(object):
             if len(self.get_by_id(item.id)) == 0:
                 self.__add(item)
             else:
-                self.__update(item)    
+                self.__update(item)
         pass
 
     def __update(self, item):
+        item.status = STAT_READY
         self.conn.execute("""update t_movie set id = %s, imdb_id = %s, tmdb_id = %s, title = %s, 
-                year = %s, poster = %s, summary = %s, time = %s, rating = %s where id = %s""", item.get_tuple_values() + (item.id, ))
+                year = %s, poster = %s, summary = %s, time = %s, rating = %s, status = %s where id = %s""", 
+                item.get_tuple_values() + (item.id, ))
         print("Updated {}".format(item))
 
     def __add(self, item):
-        self.conn.execute("""insert into t_movie (id, imdb_id, tmdb_id, title, year, poster, summary, time, rating)
-                values(%s, %s, %s, %s, %s, %s, %s, %s, %s)""", item.get_tuple_values())
+        item.status = STAT_NOT_READY
+        self.conn.execute("""insert into t_movie (id, imdb_id, tmdb_id, title, year, poster, summary, time, rating, status)
+                values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""", item.get_tuple_values())
         print("Added {}".format(item))
